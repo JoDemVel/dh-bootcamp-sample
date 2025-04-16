@@ -1,38 +1,33 @@
 package com.dharbor.sales.rest;
 
-import com.dharbor.sales.exceptions.SaleNotCompletedException;
 import com.dharbor.sales.model.dto.NewSaleDto;
 import com.dharbor.sales.model.rest.NewSaleRequest;
 import com.dharbor.sales.services.NewSalesService;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController()
+@RestController
+@RequestMapping("/api/sales")
+@RequiredArgsConstructor
 public class SalesController {
 
     private final NewSalesService newSalesService;
 
-    public SalesController(NewSalesService newSalesService) {
-        this.newSalesService = newSalesService;
+    @PostMapping
+    public ResponseEntity<String> createNewSale(@RequestBody NewSaleRequest newSaleRequest) {
+        NewSaleDto dto = NewSaleDto.builder()
+                .userId(newSaleRequest.getUserId())
+                .productId(newSaleRequest.getProductId())
+                .quantity(newSaleRequest.getQuantity())
+                .build();
+
+        String result = newSalesService.newSale(dto);
+        return ResponseEntity.ok(result);
     }
-
-    @PostMapping("/sales/newSale")
-    public ResponseEntity<String> newSale(@RequestBody NewSaleRequest newSaleRequest) {
-
-        try {
-            NewSaleDto newSaleDto = new NewSaleDto();
-            newSaleDto.setUserId(newSaleRequest.getUserId());
-            newSaleDto.setProductId(newSaleRequest.getProductId());
-            newSaleDto.setQuantity(newSaleRequest.getQuantity());
-
-            return  ResponseEntity.ok(this.newSalesService.newSale(newSaleDto));
-        } catch (SaleNotCompletedException exception) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
-        }
-
-    }
-
 }
+

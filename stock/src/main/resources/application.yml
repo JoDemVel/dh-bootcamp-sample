@@ -1,0 +1,30 @@
+server:
+  port: 80831
+
+spring:
+  application:
+    name: stock-service
+  datasource:
+    url: jdbc:mysql://${ASSETS_DB_HOST}/${ASSETS_DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address=true
+
+build:
+  version: @project.version@
+
